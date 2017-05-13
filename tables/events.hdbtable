@@ -1,0 +1,14 @@
+table.schemaName = "ema";
+table.tableType = ROWSTORE;
+table.columns = [
+	{name = "eid"; sqlType = VARCHAR; nullable = false; length = 32; comment = "GUID-32";},
+	{name = "ename"; sqlType = VARCHAR; nullable = false; length = 100;},
+	{name = "edate"; sqlType = DATE; nullable = true; },
+	{name = "created_by"; sqlType = VARCHAR; nullable = false; length = 12; comment = "DB Username of creator";},
+	{name = "created_on"; sqlType = DATE; nullable = false;}
+	];
+table.indexes =  [
+	{name = "dateIndex"; unique = false; indexColumns = ["edate"];},
+	{name = "ownerIndex"; unique = false; indexColumns = ["created_by"];}
+	];
+table.primaryKey.pkcolumns = ["eid"];
