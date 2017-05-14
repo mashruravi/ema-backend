@@ -2,9 +2,9 @@ function getEvents() {
 
 	let conn = $.hdb.getConnection();
 	let username = $.session.getUsername();
-	let query = "SELECT * FROM \"ema\".\"ema.data.tables::events\" WHERE \"created_by\" = '" + username + "';";
+	let query = "SELECT * FROM \"ema\".\"ema.data.tables::events\" WHERE \"created_by\" = ? ORDER BY \"edate\" DESC;";
 
-	let res = conn.executeQuery(query);
+	let res = conn.executeQuery(query, username);
 
 	let aData = [];
 
@@ -21,7 +21,27 @@ function getEvents() {
 	return aData;
 } // end function getEvents
 
-function createEvent(oEvent) {
+function getEvent(eid) {
+
+	let conn = $.hdb.getConnection();
+	let username = $.session.getUsername();
+	let query = "SELECT * FROM \"ema\".\"ema.data.tables::events\" WHERE \"created_by\" = ? AND \"eid\" = ?;";
+
+	let res = conn.executeQuery(query, username, eid);
+
+	let oData = {
+		eid: res[0].eid,
+		ename: res[0].ename,
+		edate: res[0].edate,
+		createdBy: res[0].created_by,
+		createdOn: res[0].created_on
+	};
+
+	return oData;
+
+} // end function getEvent
+
+function createEvent(oEventDetails) {
 
 	// Expected parameters: oEvent.ename, oEvent.edate (optional)
 
@@ -32,8 +52,8 @@ function createEvent(oEvent) {
 	let user = $.session.getUsername();
 	let now = new Date().toISOString().split('T')[0];
 
-	let ename = oEvent.ename || "";
-	let edate = oEvent.edate;
+	let ename = oEventDetails.ename || "";
+	let edate = oEventDetails.edate;
 
 	let conn = $.hdb.getConnection();
 	let sql = "INSERT INTO \"ema\".\"ema.data.tables::events\" (\"eid\", \"ename\", \"edate\", \"created_by\", \"created_on\") " +
@@ -58,7 +78,13 @@ function createEvent(oEvent) {
 try {
 	switch ($.request.method) {
 		case $.net.http.GET:
-			var data = getEvents();
+		    var eventid = $.request.parameters.get("eid");
+			var data;
+			if(eventid) {
+			    data = getEvent(eventid);
+			} else {
+			    data = getEvents();
+			}
 			$.response.setBody(JSON.stringify(data));
 			break;
 
