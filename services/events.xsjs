@@ -13,6 +13,9 @@ function getEvents() {
 			eid: res[i].eid,
 			ename: res[i].ename,
 			edate: res[i].edate,
+			etime: res[i].etime,
+			location: res[i].location,
+			description: res[i].description,
 			createdBy: res[i].created_by,
 			createdOn: res[i].created_on
 		});
@@ -33,6 +36,9 @@ function getEvent(eid) {
 		eid: res[0].eid,
 		ename: res[0].ename,
 		edate: res[0].edate,
+		etime: res[0].etime,
+		location: res[0].location,
+		description: res[0].description,
 		createdBy: res[0].created_by,
 		createdOn: res[0].created_on
 	};
@@ -54,12 +60,15 @@ function createEvent(oEventDetails) {
 
 	let ename = oEventDetails.ename || "";
 	let edate = oEventDetails.edate;
+	let etime = oEventDetails.etime;
+	let elocation = oEventDetails.location;
+	let description = oEventDetails.description;
 
 	let conn = $.hdb.getConnection();
-	let sql = "INSERT INTO \"ema\".\"ema.data.tables::events\" (\"eid\", \"ename\", \"edate\", \"created_by\", \"created_on\") " +
-		"VALUES (?, ?, ?, ?, ?) ";
+	let sql = "INSERT INTO \"ema\".\"ema.data.tables::events\" (\"eid\", \"ename\", \"edate\", \"etime\", \"location\", \"description\",  \"created_by\", \"created_on\") " +
+		"VALUES (?, ?, ?, ?, ?, ?, ?, ?) ";
 
-	conn.executeUpdate(sql, eid, ename, edate, user, now);
+	conn.executeUpdate(sql, eid, ename, edate, etime, elocation, description, user, now);
 
 	conn.commit();
 
@@ -69,6 +78,9 @@ function createEvent(oEventDetails) {
 		eid: eid,
 		ename: ename,
 		edate: edate,
+		etime: etime,
+		location: elocation,
+		description: description,
 		createdBy: user,
 		createdOn: now
 	};
@@ -78,12 +90,12 @@ function createEvent(oEventDetails) {
 try {
 	switch ($.request.method) {
 		case $.net.http.GET:
-		    var eventid = $.request.parameters.get("eid");
+			var eventid = $.request.parameters.get("eid");
 			var data;
-			if(eventid) {
-			    data = getEvent(eventid);
+			if (eventid) {
+				data = getEvent(eventid);
 			} else {
-			    data = getEvents();
+				data = getEvents();
 			}
 			$.response.setBody(JSON.stringify(data));
 			break;
