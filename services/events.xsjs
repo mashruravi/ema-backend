@@ -98,6 +98,7 @@ try {
 				data = getEvents();
 			}
 			$.response.setBody(JSON.stringify(data));
+			$.response.status = 200;
 			break;
 
 		case $.net.http.POST:
@@ -105,7 +106,9 @@ try {
 			payload = JSON.parse(payload);
 			var oEvent = createEvent(payload);
 			$.response.setBody(JSON.stringify(oEvent));
+			$.response.status = 200;
 	}
 } catch (e) {
 	$.response.setBody(e.message);
+	$.reponse.status = 500;
 }
