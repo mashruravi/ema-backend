@@ -58,11 +58,24 @@ function createEvent(oEventDetails) {
 	let user = $.session.getUsername();
 	let now = new Date().toISOString().split('T')[0];
 
-	let ename = oEventDetails.ename || "";
-	let edate = oEventDetails.edate;
-	let etime = oEventDetails.etime;
-	let elocation = oEventDetails.location;
-	let description = oEventDetails.description;
+	let ename = oEventDetails.ename;
+	let edate = oEventDetails.edate || null;
+	let etime = oEventDetails.etime || null;
+	let elocation = oEventDetails.location || null;
+	let description = oEventDetails.description || null;
+	
+	// =========================
+	// Validation checks:
+	// =========================
+	
+	// Event name is required
+	if(!ename) {
+	    throw new Error("Event Name is a mandatory parameter");
+	}
+	
+	// =========================
+	// end of Validation checks
+	// =========================
 
 	let conn = $.hdb.getConnection();
 	let sql = "INSERT INTO \"ema\".\"ema.data.tables::events\" (\"eid\", \"ename\", \"edate\", \"etime\", \"location\", \"description\",  \"created_by\", \"created_on\") " +
@@ -109,6 +122,8 @@ try {
 			$.response.status = 200;
 	}
 } catch (e) {
-	$.response.setBody(e.message);
+	$.response.setBody(JSON.stringify({
+	    errorMessage: e.message
+	}));
 	$.reponse.status = 500;
 }

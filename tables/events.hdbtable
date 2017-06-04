@@ -4,9 +4,9 @@ table.columns = [
 	{name = "eid"; sqlType = VARCHAR; nullable = false; length = 32; comment = "GUID-32";},
 	{name = "ename"; sqlType = VARCHAR; nullable = false; length = 100;},
 	{name = "edate"; sqlType = DATE; nullable = true; },
-	{name = "location"; sqlType = VARCHAR; length = 50;},
-	{name = "etime"; sqlType = TIME;},
-	{name = "description"; sqlType = VARCHAR; length = 256;},
+	{name = "location"; sqlType = VARCHAR; length = 50; nullable = true; },
+	{name = "etime"; sqlType = TIME; nullable = true; },
+	{name = "description"; sqlType = VARCHAR; length = 256; nullable = true; },
 	{name = "created_by"; sqlType = VARCHAR; nullable = false; length = 12; comment = "DB Username of creator";},
 	{name = "created_on"; sqlType = DATE; nullable = false;}
 	];
