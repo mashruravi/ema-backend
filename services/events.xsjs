@@ -49,8 +49,6 @@ function getEvent(eid) {
 
 function createEvent(oEventDetails) {
 
-	// Expected parameters: oEvent.ename, oEvent.edate (optional)
-
 	$.import("ema.data.lib", "utils");
 	let utils = $.ema.data.lib.utils;
 
@@ -68,7 +66,7 @@ function createEvent(oEventDetails) {
 	// Validation checks:
 	// =========================
 	
-	// Event name is required
+	// Event name is a mandatory parameter
 	if(!ename) {
 	    throw new Error("Event Name is a mandatory parameter");
 	}
