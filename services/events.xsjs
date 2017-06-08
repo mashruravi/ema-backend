@@ -47,6 +47,17 @@ function getEvent(eid) {
 
 } // end function getEvent
 
+// MOVE THIS TO UTILS!
+function convertDateJsToDb(oDate) {
+    
+    let day = oDate.getDate();
+    let month = oDate.getMonth() + 1;
+    let year = oDate.getFullYear();
+    
+    // Format: YYYY-MM-DD
+    return (year + "-" + month + "-" + day);
+}
+
 function createEvent(oEventDetails) {
 
 	$.import("ema.data.lib", "utils");
@@ -54,29 +65,31 @@ function createEvent(oEventDetails) {
 
 	let eid = utils.getUUID();
 	let user = $.session.getUsername();
-	let now = new Date().toISOString().split('T')[0];
+	let now = convertDateJsToDb(new Date());
 
 	let ename = oEventDetails.ename;
 	let edate = oEventDetails.edate || null;
+	
 	let etime = oEventDetails.etime || null;
 	let elocation = oEventDetails.location || null;
 	let description = oEventDetails.description || null;
-	
+
 	// =========================
 	// Validation checks:
 	// =========================
-	
+
 	// Event name is a mandatory parameter
-	if(!ename) {
-	    throw new Error("Event Name is a mandatory parameter");
+	if (!ename) {
+		throw new Error("Event Name is a mandatory parameter");
 	}
-	
+
 	// =========================
 	// end of Validation checks
 	// =========================
 
 	let conn = $.hdb.getConnection();
-	let sql = "INSERT INTO \"ema\".\"ema.data.tables::events\" (\"eid\", \"ename\", \"edate\", \"etime\", \"location\", \"description\",  \"created_by\", \"created_on\") " +
+	let sql = "INSERT INTO \"ema\".\"ema.data.tables::events\" " +
+		"(\"eid\", \"ename\", \"edate\", \"etime\", \"location\", \"description\",  \"created_by\", \"created_on\") " +
 		"VALUES (?, ?, ?, ?, ?, ?, ?, ?) ";
 
 	conn.executeUpdate(sql, eid, ename, edate, etime, elocation, description, user, now);
@@ -121,7 +134,7 @@ try {
 	}
 } catch (e) {
 	$.response.setBody(JSON.stringify({
-	    errorMessage: e.message
+		errorMessage: e.message
 	}));
 	$.reponse.status = 500;
 }
