@@ -49,13 +49,13 @@ function getEvent(eid) {
 
 // MOVE THIS TO UTILS!
 function convertDateJsToDb(oDate) {
-    
-    let day = oDate.getDate();
-    let month = oDate.getMonth() + 1;
-    let year = oDate.getFullYear();
-    
-    // Format: YYYY-MM-DD
-    return (year + "-" + month + "-" + day);
+
+	let day = oDate.getDate();
+	let month = oDate.getMonth() + 1;
+	let year = oDate.getFullYear();
+
+	// Format: YYYY-MM-DD
+	return (year + "-" + month + "-" + day);
 }
 
 function createEvent(oEventDetails) {
@@ -69,7 +69,7 @@ function createEvent(oEventDetails) {
 
 	let ename = oEventDetails.ename;
 	let edate = oEventDetails.edate || null;
-	
+
 	let etime = oEventDetails.etime || null;
 	let elocation = oEventDetails.location || null;
 	let description = oEventDetails.description || null;
@@ -111,17 +111,37 @@ function createEvent(oEventDetails) {
 
 } // end function createEvent
 
+function deleteEvent(sEventId) {
+
+	let conn = $.hdb.getConnection();
+	let username = $.session.getUsername();
+	let query = "DELETE FROM \"ema\".\"ema.data.tables::events\" WHERE \"created_by\" = ? AND \"eid\" = ?;";
+
+	conn.executeUpdate(query, username, sEventId);
+	conn.commit();
+
+} // end of function deleteEvent
+
 try {
+
+	var eventid;
+
 	switch ($.request.method) {
 		case $.net.http.GET:
-			var eventid = $.request.parameters.get("eid");
-			var data;
+			eventid = $.request.parameters.get("eid");
+			var deleteFlag = $.request.parameters.get("delete");
+			var data = null;
 			if (eventid) {
-				data = getEvent(eventid);
+				if (deleteFlag === "true") {
+					deleteEvent(eventid);
+				} else {
+					data = getEvent(eventid);
+					$.response.setBody(JSON.stringify(data));
+				}
 			} else {
 				data = getEvents();
+				$.response.setBody(JSON.stringify(data));
 			}
-			$.response.setBody(JSON.stringify(data));
 			$.response.status = 200;
 			break;
 
@@ -131,7 +151,14 @@ try {
 			var oEvent = createEvent(payload);
 			$.response.setBody(JSON.stringify(oEvent));
 			$.response.status = 200;
+			break;
+
+			// 		case $.net.http.DELETE:
+			// 			eventid = $.request.parameters.get("eid");
+			// 			deleteEvent(eventid);
+			// 			$.response.status = 204;
 	}
+
 } catch (e) {
 	$.response.setBody(JSON.stringify({
 		errorMessage: e.message
