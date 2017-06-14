@@ -129,19 +129,13 @@ try {
 	switch ($.request.method) {
 		case $.net.http.GET:
 			eventid = $.request.parameters.get("eid");
-			var deleteFlag = $.request.parameters.get("delete");
 			var data = null;
 			if (eventid) {
-				if (deleteFlag === "true") {
-					deleteEvent(eventid);
-				} else {
-					data = getEvent(eventid);
-					$.response.setBody(JSON.stringify(data));
-				}
+				data = getEvent(eventid);
 			} else {
 				data = getEvents();
-				$.response.setBody(JSON.stringify(data));
 			}
+			$.response.setBody(JSON.stringify(data));
 			$.response.status = 200;
 			break;
 
@@ -153,10 +147,10 @@ try {
 			$.response.status = 200;
 			break;
 
-			// 		case $.net.http.DELETE:
-			// 			eventid = $.request.parameters.get("eid");
-			// 			deleteEvent(eventid);
-			// 			$.response.status = 204;
+		case $.net.http.DEL:
+			eventid = $.request.parameters.get("eid");
+			deleteEvent(eventid);
+			$.response.status = 204;
 	}
 
 } catch (e) {
