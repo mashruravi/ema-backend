@@ -122,6 +122,19 @@ function deleteEvent(sEventId) {
 
 } // end of function deleteEvent
 
+function updateEvent(oEvent) {
+    
+    let conn = $.hdb.getConnection();
+    let username = $.session.getUsername();
+    let query = "UPDATE \"ema\".\"ema.data.tables::events\" SET " +
+        "\"ename\" = ?, \"edate\" = ?, \"location\" = ?, \"etime\" = ?, \"description\" = ? " +
+        "WHERE \"eid\" = ? AND \"created_by\" = ?";
+    
+    conn.executeUpdate(query, oEvent.ename, oEvent.edate, oEvent.location, oEvent.etime, oEvent.description, oEvent.eid, username);
+    conn.commit();
+    
+} // End of function updateEvent
+
 try {
 
 	var eventid;
@@ -142,8 +155,8 @@ try {
 		case $.net.http.POST:
 			var payload = $.request.body.asString();
 			payload = JSON.parse(payload);
-			var oEvent = createEvent(payload);
-			$.response.setBody(JSON.stringify(oEvent));
+			var oNewEvent = createEvent(payload);
+			$.response.setBody(JSON.stringify(oNewEvent));
 			$.response.status = 200;
 			break;
 
@@ -151,6 +164,17 @@ try {
 			eventid = $.request.parameters.get("eid");
 			deleteEvent(eventid);
 			$.response.status = 204;
+			break;
+			
+		case $.net.http.PUT:
+		    var newData = $.request.body.asString();
+		    var newDataJson = JSON.parse(newData);
+		    updateEvent(newDataJson);
+		    $.response.status = 200;
+		    break;
+			
+		default:
+		    $.response.status = 405;
 	}
 
 } catch (e) {
