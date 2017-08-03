@@ -31,12 +31,17 @@ function getEvent(eid) {
 	let query = "SELECT * FROM \"ema\".\"ema.data.tables::events\" WHERE \"created_by\" = ? AND \"eid\" = ?;";
 
 	let res = conn.executeQuery(query, username, eid);
+	
+	// No event with given ID
+	if(!res[0]) {
+	    return null;
+	}
 
 	let oData = {
 		eid: res[0].eid,
 		ename: res[0].ename,
 		edate: res[0].edate,
-		etime: res[0].etime.toLocaleTimeString(),
+		etime: res[0].etime ? res[0].etime.toLocaleTimeString() : null,
 		location: res[0].location,
 		description: res[0].description,
 		createdBy: res[0].created_by,
@@ -147,6 +152,11 @@ try {
 				data = getEvent(eventid);
 			} else {
 				data = getEvents();
+			}
+			if(eventid && !data) {
+			    $.response.setBody(JSON.stringify({ errorMessage: "Event Not Found" }));
+			    $.response.status = 404;
+			    break;
 			}
 			$.response.setBody(JSON.stringify(data));
 			$.response.status = 200;
