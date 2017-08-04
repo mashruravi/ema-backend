@@ -13,7 +13,7 @@ function getEvents() {
 			eid: res[i].eid,
 			ename: res[i].ename,
 			edate: res[i].edate,
-			etime: res[i].etime.toLocaleTimeString(),
+			etime: res[i].etime ? res[i].etime.toLocaleTimeString() : null,
 			location: res[i].location,
 			description: res[i].description,
 			createdBy: res[i].created_by,
