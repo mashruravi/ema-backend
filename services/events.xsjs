@@ -70,7 +70,8 @@ function createEvent(oEventDetails) {
 
 	let eid = utils.getUUID();
 	let user = $.session.getUsername();
-	let now = convertDateJsToDb(new Date());
+// 	let now = convertDateJsToDb(new Date());
+    let now = new Date();
 
 	let ename = oEventDetails.ename;
 	let edate = oEventDetails.edate || null;
@@ -106,7 +107,7 @@ function createEvent(oEventDetails) {
 	return {
 		eid: eid,
 		ename: ename,
-		edate: edate,
+		edate: edate ? new Date(edate) : null,
 		etime: etime,
 		location: elocation,
 		description: description,
